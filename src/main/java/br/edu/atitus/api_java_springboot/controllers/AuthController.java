@@ -15,20 +15,21 @@ public class AuthController {
 
     private final UserService service;
 
-    public AuthController() {
+    public AuthController(UserService service) {
         super();
-        this.service = new UserService();
+        this.service = service;
     }
 
     @PostMapping("/signup")
     public ResponseEntity<UserEntity> signup(@RequestBody SignupDTO dto) throws Exception{
         // Entidade criada
         UserEntity user = new UserEntity();
+
         // Propriedades da DTO copiadas para a entidade
         BeanUtils.copyProperties(dto, user);
+
         //Valores não presentes na DTO setados
         user.setType(UserType.Regular);
-
 
         service.save(user);
 

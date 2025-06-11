@@ -1,16 +1,30 @@
 package br.edu.atitus.api_java_springboot.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
 import java.util.UUID;
 
+@Entity
+@Table(name = "tb_user")
 public class UserEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(length = 100, nullable = false)
     private String username;
+
+    @Column(length = 100, nullable = false)
     private  String email;
+
     @JsonIgnore
+    @Column(length = 30, nullable = false)
     private String password;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = false)
     private UserType type;
 
     public UUID getId() {
