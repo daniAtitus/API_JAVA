@@ -2,16 +2,22 @@ package br.edu.atitus.api_java_springboot.services;
 
 import br.edu.atitus.api_java_springboot.entities.UserEntity;
 import br.edu.atitus.api_java_springboot.repositories.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
         super();
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserEntity save(UserEntity user) throws Exception{
@@ -21,7 +27,7 @@ public class UserService {
 
         if (user.getUsername() == null || user.getUsername().isEmpty())
             throw new Exception("Nome inválido");
-        user.setUsername(user.getUsername().trim());
+        user.setName(user.getUsername().trim());
 
         if (user.getEmail() == null || user.getEmail().isEmpty())
             throw new Exception("Email inválido");
@@ -38,8 +44,17 @@ public class UserService {
         if (repository.existsByEmail(user.getEmail()))
             throw new Exception("Email já cadastrado");
 
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         repository.save(user);
 
+        return user;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        var user = repository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário Não encontrado"));
         return user;
     }
 }
