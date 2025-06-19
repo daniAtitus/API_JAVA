@@ -9,7 +9,6 @@ public class ApiJavaSpringBootApplication {
     public static void main(String[] args) {
         SpringApplication.run(ApiJavaSpringBootApplication.class, args);
 
-
     }
 
 }
